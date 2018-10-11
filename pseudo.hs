@@ -1,5 +1,7 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
 
+import Data.List
+
 genetic _ _ _ _ _ 0 population = population 
 genetic fit cross mutate pc pm maxIterations population =  genetic fit cross mutate pc pm maxIterations-1 replacePop (mutatePop pm (crossPop pc (selectPop population)))
     where
@@ -46,8 +48,10 @@ replacement fit population best =
 
 -- get the index of the worst solution in a population
 
-indexofworst fit [] (worstFit, worstIndex) = (worstFit, worstIndex)
-indexofworst fit [h:t] (worstFit, worstIndex) = if fit h < worstFit then indexofworst fit t ()
+indexofworst fit lst = elemIndex (minimum fittedLst) fittedLst where
+    fittedLst = map fit lst
+--indexofworst fit [] (worstFit, worstIndex) = (worstFit, worstIndex)
+--indexofworst fit [h:t] (worstFit, worstIndex) = if fit h < worstFit then indexofworst fit t ()
 
 -- cross the population to generate new population
 crossALL::cross -> pc -> population -> population
