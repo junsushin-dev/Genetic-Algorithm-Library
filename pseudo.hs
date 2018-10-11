@@ -8,6 +8,8 @@ genetic fit cross mutate pc pm maxIterations population =  genetic fit cross mut
         mutatePop population = [mutate c | c <- population | shouldApplyMut pm] -- generate random number in shouldApplyMut
         replacePop population = replacement population
 
+data result = (chromosome, population) -- best chromosome, whole population
+
 data chromosome = [a]
 
 fit::chromosome -> Num
