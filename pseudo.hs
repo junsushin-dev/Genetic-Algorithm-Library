@@ -8,7 +8,7 @@ genetic fit cross mutate pc pm maxIterations population =  genetic fit cross mut
         selectPop population = select fit population
         crossPop population = cross population
         mutatePop population = [mutate c | c <- population | shouldApplyMut pm] -- generate random number in shouldApplyMut
-        replacePop population = replacement population
+        replacePop population = replacement fit population -- TODO: missing parameter "best"
 
 data result = (chromosome, population) -- best chromosome, whole population
 
@@ -52,6 +52,9 @@ indexofworst fit lst = elemIndex (minimum fittedLst) fittedLst where
     fittedLst = map fit lst
 --indexofworst fit [] (worstFit, worstIndex) = (worstFit, worstIndex)
 --indexofworst fit [h:t] (worstFit, worstIndex) = if fit h < worstFit then indexofworst fit t ()
+
+-- Return True if generated number is below pm.
+shouldApplyMut pm = if pm < (randomRIO (0, 1 :: Double)) then True else False
 
 -- cross the population to generate new population
 crossALL::cross -> pc -> population -> population
