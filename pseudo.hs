@@ -18,11 +18,11 @@ chromosome::[a]
 -- data result = (chromosome, population) -- best chromosome, whole population
 -- data chromosome = [a]
 
-genetic _ _ _ _ _ 0 population = population 
+genetic _ _ _ _ _ 0 population = population -- TODO: Extract best solution of this population. Maybe somehow like in indexof worst
 genetic fit cross mutate pc pm maxIterations population = genetic fit cross mutate pc pm maxIterations-1 replacePop (mutatePop pm (crossPop pc (selectPop population)))
     where
         selectPop population = select fit population
-        crossPop population = cross population
+        crossPop population = crossAll pc cross population
         mutatePop population = [mutate c | c <- population | shouldApplyMut pm] -- generate random number in shouldApplyMut
         replacePop population = replacement fit population -- TODO: missing parameter "best"
 
@@ -52,7 +52,6 @@ select fit population = map (replaceNth population new) [0..(length population)]
 
 -- make sure that the best genes are selected into the population (elitism)
 replacement::fit -> population -> population
-
 replacement fit population best = replaceNth population best worst
     where
         worst = indexofworst fit population
@@ -67,7 +66,7 @@ indexofworst fit lst = elemIndex (minimum fittedLst) fittedLst
 shouldApplyMut pm = if pm < (randomRIO (0, 1 :: Double)) then True else False
 
 -- cross the population to generate new population
+-- We will cross contiguous parents (i, i+1). If a random double in [0,1] is less than pc,
+-- replace i and i+1 by the pair of new chromosomes returned from cross function
 crossALL::cross -> pc -> population -> population
-
-mutateALL::mutate -> population -> population
 
