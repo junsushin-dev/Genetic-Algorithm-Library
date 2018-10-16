@@ -27,7 +27,7 @@ genetic fit cross mutate pc pm maxIterations population =
         rndMutProb <- replicateM (length population) $ randomRIO (0, 1 :: Double)
 
         let best = population !! indexOfBest population
-        let selectPop = select fit population rndIndex (length population - 1)
+        let selectPop = select fit population rndIndex 0
         let crossPop = crossAll cross pc rndCrossProbs selectPop
         let mutatePop = [if p < pm then mutate c else c | (c, p) <- zip population rndMutProb]
         let replacePop = replacement fit mutatePop best
@@ -64,10 +64,11 @@ replaceNth (x:xs) newVal n
 
 -- Select a Population using binary tournament
 select::fit -> Population -> [Int] -> Int -> Population
-select _ population _ -1 = population -- -1 because 0 is a valid index
-select fit population (i1:(i2:t)) i = select fit (replaceNth population new i) t i-1
-        where 
-            new = binaryTournament fit population i1 i2
+select fit population (i1:(i2:t)) i =
+    | i >= length population = population
+    | otherwise = select fit (replaceNth population new i) t i+1
+    where
+        new = binaryTournament fit population i1 i2
 
 -- make sure that the best genes are selected into the population (elitism)
 replacement::fit -> Population -> Population
