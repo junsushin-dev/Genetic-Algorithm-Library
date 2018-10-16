@@ -10,11 +10,8 @@ import Data.List
 
 -- mutate a single Chromosome according to pm(mutation probability)
 -- REQUIRES: mutategene fuction 
-mutate :: Chromosome -> IO Chromosome
-mutate ch =
-    do
-        index <- randomRIO (0, (length ch)-1 :: Int)
-        return (mutategene ch index)
+mutate :: Chromosome -> Int -> Chromosome
+mutate ch index = (mutategene ch index)
 
 -- Replace the nth element in a list by newVal
 replaceNth :: [a] -> a -> Int -> [a]
