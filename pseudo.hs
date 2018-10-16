@@ -18,21 +18,25 @@ chromosome::[a]
 -- data result = (chromosome, population) -- best chromosome, whole population
 -- data chromosome = [a]
 
-genetic _ _ _ _ _ 0 population = population -- TODO: Extract best solution of this population. Maybe somehow like in indexof worst
-genetic fit cross mutate pc pm maxIterations population = genetic fit cross mutate pc pm maxIterations-1 replacePop (mutatePop pm (crossPop pc (selectPop population)))
+genetic _ _ _ _ _ 0 population = population !! indexOfBest population
+genetic fit cross mutate pc pm maxIterations population = genetic fit cross mutate pc pm maxIterations-1 replacePop best (mutatePop pm (crossPop pc (selectPop population)))
     where
-        selectPop population = select fit population
-        crossPop population = crossAll pc cross population
-        mutatePop population = [mutate c | c <- population | shouldApplyMut pm] -- generate random number in shouldApplyMut
-        replacePop population = replacement fit population -- TODO: missing parameter "best"
+        best = indexOfBest population
+        selectPop pop = select fit pop
+        crossPop pop = crossAll pc cross pop
+        mutatePop pop = [mutate c | c <- pop | shouldApplyMut pm] -- generate random number in shouldApplyMut
+        replacePop b pop = replacement fit pop b
 
 -- population::[[]]
 -- apply it n times (n = number of population) maybe fold or map (a is dummy for map use)
 binaryTournament::fit -> population -> chromosome  
 binaryTournament fit population =
     do
-        let s1 = population!!randomRIO(0, length population)
-        let s2 = population!!randomRIO(0, length population)
+        i1 <- randomRIO(0, length population)
+        i2 <- randomRIO(0, length population)
+
+        let s1 = population!!i1
+        let s2 = population!!i2
 
         if fit s1 > fit s2 then s1 else s2
 
@@ -47,23 +51,30 @@ replaceNth (x:xs) newVal n
 -- Select a Population using binary tournament
 select::fit -> population -> population
 select fit population = map (replaceNth population new) [0..(length population)]
-        where
-            new = binaryTournament fit population
+    where
+        new = binaryTournament fit population
 
 -- make sure that the best genes are selected into the population (elitism)
 replacement::fit -> population -> population
 replacement fit population best = replaceNth population best worst
     where
-        worst = indexofworst fit population
+        worst = indexOfWorst fit population
 
 -- get the index of the worst solution in a population
-indexofworst fit lst = elemIndex (minimum fittedLst) fittedLst 
+indexOfWorst fit lst = elemIndex (minimum fittedLst) fittedLst 
     where
         fittedLst = map fit lst
 
+--get the index of the best solution in a population
+indexOfBest fit lst = elemIndex (maximum fittedLst) fittedLst 
+    where
+        fittedLst = map fit lst
 
 -- Return True if generated number is below pm.
-shouldApplyMut pm = if pm < (randomRIO (0, 1 :: Double)) then True else False
+shouldApplyMut pm = do
+    p <- randomRIO (0, 1 :: Double)
+
+    if pm < p then True else False
 
 -- cross the population to generate new population
 -- We will cross contiguous parents (i, i+1). If a random double in [0,1] is less than pc,
