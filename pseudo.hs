@@ -21,7 +21,7 @@ mutate::Chromosome -> Double -> Chromosome
 genetic _ _ _ _ _ 0 population = population !! indexOfBest population
 genetic fit cross mutate pc pm maxIterations population = genetic fit cross mutate pc pm maxIterations-1 replacePop best (mutatePop pm (crossPop pc (selectPop population)))
     where
-        best = indexOfBest population
+        best = population !! indexOfBest population
         selectPop pop = select fit pop
         crossPop pop = crossAll pc cross pop
         mutatePop pop = [mutate c | c <- pop, shouldApply pm] -- TODO: pass random p as an argument. Maybe with c <- pop p <- probs, shouldApplyMut pm p
