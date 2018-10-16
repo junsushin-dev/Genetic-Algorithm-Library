@@ -27,7 +27,7 @@ mutate::Chromosome -> Double -> Chromosome
 genetic fit cross mutate pc pm maxIterations population =
     do
         rg <- newStdGen     -- gets a new random number generater each time
-        let best = appliedGenetic fit cross mutate pc pm maxIterations population (randomRs (0, length population-1) rg) (randomRs (0, 1 :: Double) rg)
+        let best = appliedGenetic fit cross mutate pc pm maxIterations population (randomRs (0, ((length population)-1) :: Int) rg) (randomRs (0, 1 :: Double) rg)
         return best
 
 appliedGenetic fit _ _ _ _ 0 population _ _= population !! (indexOfBest fit population)
