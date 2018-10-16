@@ -2,10 +2,12 @@
 module BitArrayChromosome (
     Chromosome,
     Bin,
+    --chromosome2lst,
     mkChromosome,
     mkData,
     getFst,
-    getSnd
+    getSnd,
+    mutategene
     ) where
 
 -- defines single chromosome data, being either 0 or 1
@@ -20,21 +22,23 @@ mkBin n
 
 -- defines the whole chromosome
 -- chromosome is a list of 6 chromosomes
-data Chromosome = Chromosome [Bin]
-    deriving (Show, Eq)
+type Chromosome = [Bin]
 
 -- ensures that chromosome has a list lenght of 6
+
 mkChromosome :: [Bin] -> Chromosome
 mkChromosome list
-    | length list == 6 = Chromosome list
+    | length list == 6 = list
     | otherwise = error "Invalid length"
 
 -- easy constructor function for chromosome
 mkData :: [Int] -> Chromosome
 mkData lst = mkChromosome (map mkBin lst)
 
+{-
 chromosome2lst :: Chromosome -> [Bin]
 chromosome2lst (Chromosome lst) = lst
+-}
 
 -- test cases 
 -- mkData [1,1,1,1,1,1]
@@ -44,13 +48,25 @@ chromosome2lst (Chromosome lst) = lst
 
 -- gets the first half of the chromosome
 getFst :: Chromosome -> [Bin]
-getFst chromosome = fst (splitAt 3 (chromosome2lst chromosome))
+getFst chromosome = fst (splitAt 3 chromosome)
 
 -- gets the second half of the chromosome
 getSnd :: Chromosome -> [Bin]
-getSnd chromosome = snd (splitAt 3 (chromosome2lst chromosome))
+getSnd chromosome = snd (splitAt 3 chromosome)
 
 -- test cases
 -- foo = mkData[1,1,1,0,0,0]
 -- getFst foo
 -- getSnd foo
+
+mutategene :: Chromosome -> Int -> Chromosome
+mutategene ch i = replaceNth ch newv i 
+    where
+        newv = if ch!!i == Bin 0 then Bin 1 else Bin 0
+
+-- Replace the nth element in a list by newVal
+replaceNth :: [a] -> a -> Int -> [a]
+replaceNth [] _ _ = []
+replaceNth (x:xs) newVal n
+    | n == 0 = newVal:xs
+    | otherwise = x:replaceNth xs newVal (n-1)
