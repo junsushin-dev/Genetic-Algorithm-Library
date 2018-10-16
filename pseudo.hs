@@ -24,7 +24,7 @@ genetic fit cross mutate pc pm maxIterations population = genetic fit cross muta
         best = indexOfBest population
         selectPop pop = select fit pop
         crossPop pop = crossAll pc cross pop
-        mutatePop pop = [mutate c | c <- pop | shouldApplyMut pm] -- generate random number in shouldApplyMut
+        mutatePop pop = [mutate c | c <- pop, shouldApply pm] -- TODO: pass random p as an argument. Maybe with c <- pop p <- probs, shouldApplyMut pm p
         replacePop b pop = replacement fit pop b
 
 -- typedef for crossAll
@@ -78,4 +78,4 @@ indexOfBest fit lst = elemIndex (maximum fittedLst) fittedLst
         fittedLst = map fit lst
 
 -- Return True if generated number is below pm.
-shouldApplyMut pm p = if p < pm then True else False
+shouldApply pm p = p < pm
