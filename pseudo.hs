@@ -22,7 +22,7 @@ mutate::Chromosome -> Double -> Chromosome
 genetic _ _ _ _ _ 0 population = do return population !! indexOfBest population
 genetic fit cross mutate pc pm maxIterations population =
     do
-        rndIndex <- replicateM (2 * length population) $ randomRIO (0, (length population - 1 ) :: Int)
+        rndIndex <- replicateM (2 * length population) $ randomRIO (0, (length population - 1) :: Int)
         rndCrossProbs <- replicateM (length population / 2) $ randomRIO (0, 1 :: Double)
         rndMutProb <- replicateM (length population) $ randomRIO (0, 1 :: Double)
 
@@ -64,8 +64,8 @@ replaceNth (x:xs) newVal n
 
 -- Select a Population using binary tournament
 select::fit -> Population -> [Int] -> Int -> Population
-select _ population _ 0 = population
-select fit population (i1:i2:t) i = select fit (replaceNth population new i) t i-1
+select _ population _ -1 = population -- -1 because 0 is a valid index
+select fit population (i1:(i2:t)) i = select fit (replaceNth population new i) t i-1
         where 
             new = binaryTournament fit population i1 i2
 
@@ -89,6 +89,3 @@ indexOfWorst fit lst = elemIndex (minimum fittedLst) fittedLst
 indexOfBest fit lst = elemIndex (maximum fittedLst) fittedLst 
     where
         fittedLst = map fit lst
-
--- Return True if generated number is below pm.
-shouldApply pm p = p < pm
