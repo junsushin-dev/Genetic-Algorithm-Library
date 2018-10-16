@@ -1,8 +1,10 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
 
+import Cross
+import Mutate
+
 import Control.Monad (replicateM)
 import Data.List
-import Cross
 import Data.Maybe
 import System.Random
 
