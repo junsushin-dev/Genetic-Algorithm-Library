@@ -13,10 +13,3 @@ import Data.List
 mutate :: Chromosome -> Int -> Chromosome
 mutate ch index = (mutategene ch index)
 
--- Replace the nth element in a list by newVal
-replaceNth :: [a] -> a -> Int -> [a]
-replaceNth [] _ _ = []
-replaceNth (x:xs) newVal n
-    | n == 0 = newVal:xs
-    | otherwise = x:replaceNth xs newVal (n-1)
-

@@ -19,20 +19,20 @@ type Fit = (Chromosome -> Double)
 fit::Chromosome -> Num
 
 -- mutate a single Chromosome according to pm(mutation probability)
-mutate::Chromosome -> Double -> Chromosome
+mutate::Chromosome -> Double -> Int -> Chromosome
 
 -- data result = (Chromosome, population) -- best Chromosome, whole population
 -}
 
-genetic fit cross mutate pc pm maxIterations population =
+genetic fit cross mutate pc pm maxIterations population chromosomeSize =
     do
         rg <- newStdGen     -- gets a new random number generater each time
-        let best = appliedGenetic fit cross mutate pc pm maxIterations population (randomRs (0, ((length population)-1) :: Int) rg) (randomRs (0, 1 :: Double) rg)
+        let best = appliedGenetic fit cross mutate pc pm maxIterations population (randomRs (0, ((length population)-1) :: Int) rg) (randomRs (0, 1 :: Double) rg) (randomRs (0, (chromosomeSize - 1) :: Int) rg)
         return best
 
-appliedGenetic fit _ _ _ _ 0 population _ _= population !! (indexOfBest fit population)
-appliedGenetic fit cross mutate pc pm maxIterations population intRndStream realRndStream =
-    appliedGenetic fit cross mutate pc pm (maxIterations-1) replacePop intTail realTail
+appliedGenetic fit _ _ _ _ 0 population _ _ _= population !! (indexOfBest fit population)
+appliedGenetic fit cross mutate pc pm maxIterations population intRndStream realRndStream muteStream =
+    appliedGenetic fit cross mutate pc pm (maxIterations-1) replacePop intTail realTail muteTail
         where
             best = population !! (indexOfBest fit population)
             (rndIndex, intTail) = splitAt (2 * (length population)) intRndStream
@@ -40,7 +40,9 @@ appliedGenetic fit cross mutate pc pm maxIterations population intRndStream real
             (rndCrossProbs, tempTail) = splitAt (div (length population) 2) realRndStream
             crossPop = crossAll cross pc rndCrossProbs selectPop
             (rndMutProb, realTail) = splitAt (length population) tempTail
-            mutatePop = [if p < pm then mutate c else c | (c, p) <- zip population rndMutProb]
+            (muteList, muteTail) = splitAt (length population) muteStream
+            muteRandNums = zip muteList rndMutProb
+            mutatePop = [if p < pm then mutate c i else c | (c, (i, p)) <- zip population muteRandNums]
             replacePop = replacement fit mutatePop best
 
 --genetic fit _ _ _ _ 0 population = do return population !! (indexOfBest fit population)
