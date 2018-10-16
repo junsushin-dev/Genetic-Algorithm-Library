@@ -69,11 +69,6 @@ select fit population (i1:(i2:t)) i = select fit (replaceNth population new i) t
         where 
             new = binaryTournament fit population i1 i2
 
-
-select fit population  = map (replaceNth population new) [0..(length population)]
-    where
-        new = binaryTournament fit population
-
 -- make sure that the best genes are selected into the population (elitism)
 replacement::fit -> Population -> Population
 replacement fit population best = replaceNth population best worst
