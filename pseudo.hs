@@ -1,5 +1,6 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
 
+import Control.Monad (replicateM)
 import Data.List
 import Cross
 
@@ -18,14 +19,20 @@ mutate::Chromosome -> Double -> Chromosome
 -- data result = (Chromosome, population) -- best Chromosome, whole population
 -}
 
-genetic _ _ _ _ _ 0 population = population !! indexOfBest population
-genetic fit cross mutate pc pm maxIterations population = genetic fit cross mutate pc pm maxIterations-1 replacePop best (mutatePop pm (crossPop pc (selectPop population)))
-    where
-        best = population !! indexOfBest population
-        selectPop pop = select fit pop
-        crossPop pop = crossAll pc cross pop
-        mutatePop pop = [mutate c | c <- pop, shouldApply pm] -- TODO: pass random p as an argument. Maybe with c <- pop p <- probs, shouldApplyMut pm p
-        replacePop b pop = replacement fit pop b
+genetic _ _ _ _ _ 0 population = do return population !! indexOfBest population
+genetic fit cross mutate pc pm maxIterations population =
+    do
+        rndIndex <- replicateM (2 * length population) $ randomRIO (0, (length population - 1 ) :: Int)
+        rndCrossProbs <- replicateM (length population / 2) $ randomRIO (0, 1 :: Double)
+        rndMutProb <- replicateM (length population) $ randomRIO (0, 1 :: Double)
+
+        let best = population !! indexOfBest population
+        let selectPop = select fit population rndIndex (length population - 1)
+        let crossPop = crossAll cross pc rndCrossProbs selectPop
+        let mutatePop = [if p < pm then mutate c else c | (c, p) <- zip population rndMutProb]
+        let replacePop = replacement fit mutatePop best
+
+        return genetic fit cross mutate pc pm maxIterations-1 replacePop
 
 -- typedef for crossAll
 type Crossfunc = Chromosome -> Chromosome -> (Chromosome, Chromosome)
@@ -56,8 +63,14 @@ replaceNth (x:xs) newVal n
     | otherwise = x:replaceNth xs newVal (n-1)
 
 -- Select a Population using binary tournament
-select::fit -> Population -> Population
-select fit population = map (replaceNth population new) [0..(length population)]
+select::fit -> Population -> [Int] -> Int -> Population
+select _ population _ 0 = population
+select fit population (i1:i2:t) i = select fit (replaceNth population new i) t i-1
+        where 
+            new = binaryTournament fit population i1 i2
+
+
+select fit population  = map (replaceNth population new) [0..(length population)]
     where
         new = binaryTournament fit population
 
