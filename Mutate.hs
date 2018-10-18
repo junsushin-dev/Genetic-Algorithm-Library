@@ -9,7 +9,7 @@ import System.Random
 import Data.List
 
 -- mutate a single Chromosome according to pm(mutation probability)
--- REQUIRES: mutategene fuction 
-mutate :: Chromosome -> Int -> Chromosome
+-- REQUIRES: mutategene fuction, Rand type definition
+mutate :: Chromosome -> Rand -> Chromosome
 mutate ch index = (mutategene ch index)
 

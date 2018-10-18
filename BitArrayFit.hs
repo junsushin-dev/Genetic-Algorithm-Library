@@ -1,15 +1,15 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
 -- done by Junsu Shin
 
-module BitArrayFit(
-    fit,
-    Fit) where
+module BitArrayFit
+
+where
 
 import BitArrayChromosome
 
 type Fit = Chromosome -> Int
 
-temptarget = chromosome2lst (mkData [1,1,1,1,1,1])
+temptarget = mkData [1,1,1,1,1,1]
 
 -- Fitness function. From a Chromosome it must return a Num regarding how good this Chromosome is
 -- <Test Case>
@@ -24,7 +24,7 @@ fit d4
 fit d6
 -}
 fit::Chromosome -> Int
-fit chromosome = targetCompare temptarget (chromosome2lst chromosome)
+fit chromosome = targetCompare temptarget chromosome
 
 targetCompare:: (Eq a) => [a] -> [a] -> Int
 targetCompare _ [] = 0

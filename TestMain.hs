@@ -1,14 +1,21 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
 
+module TestMain
+
+where
+
 import Cross
 import Mutate
+
+import BitArrayFit
+import BitArrayChromosome
+import Population
+import EasyPopulation
 
 import Control.Monad (replicateM)
 import Data.List
 import Data.Maybe
 import System.Random
-import BitArrayFit
-import BitArrayChromosome
 
 type Population = [Chromosome]
 -- type Fit = (Chromosome -> Double)
@@ -26,10 +33,14 @@ mutate::Chromosome -> Double -> Int -> Chromosome
 -- data result = (Chromosome, population) -- best Chromosome, whole population
 -}
 
-genetic fit cross mutate pc pm maxIterations population chromosomeSize =
+genetic fit cross mutate pc pm maxIterations ioPopulation chromosomeSize =
     do
         rg <- newStdGen     -- gets a new random number generater each time
-        let best = appliedGenetic fit cross mutate pc pm maxIterations population (randomRs (0, ((length population)-1) :: Int) rg) (randomRs (0, 1 :: Double) rg) (randomRs (0, (chromosomeSize - 1) :: Int) rg)
+        population <- ioPopulation
+        let intRndStream = (randomRs (0, ((length population)-1) :: Int) rg)
+        let realRndStream = (randomRs (0, 1 :: Double) rg)
+        let muteStream = (randomRs (0, (chromosomeSize - 1) :: Int) rg)
+        let best = appliedGenetic fit cross mutate pc pm maxIterations population intRndStream realRndStream muteStream
         return best
 
 appliedGenetic fit _ _ _ _ 0 population _ _ _= ((population !! (indexOfBest fit population)) , [])
@@ -115,16 +126,25 @@ indexOfBest fit lst = fromJust (elemIndex (maximum fittedLst) fittedLst)
     where
         fittedLst = map fit lst
 
-d1 = mkData [0,0,1,0,0,0]
-d2 = mkData [0,1,0,1,0,1]
-d3 = mkData [1,0,1,0,1,1]
-d4 = mkData [1,0,1,1,0,1]
-d5 = mkData [0,0,1,0,0,0]
-d6 = mkData [0,1,0,1,0,1]
-d7 = mkData [1,0,1,0,1,1]
-d8 = mkData [0,0,0,0,0,0]
 
-testPop = [d1,d2,d3,d4,d5,d6,d7,d8]
+{-
+let testPop = genBinPop 10 10
+let target = dec2bin 10 1023
+let myfit = targetCompare target
+let res = genetic myfit cross mutate 0.3 0.05 50 p 10
+printResult res
+-}
 
--- genetic fit cross mutate 0.3 0.05 10 testPop 6
--- genetic fit cross mutate 0.3 0.05 100 testPop 6
+-- prints the result of genetic to be seen by the user
+printResult :: IO (Chromosome, [Chromosome]) -> IO ()
+printResult res =
+    do
+        (final, record) <- res
+        let finalString = "Final Best: " ++ (show final) ++ "\n"
+        let recordString = recordPrint 1 record
+        wholeString <- putStr (finalString ++ recordString)
+        return wholeString
+
+recordPrint :: Int -> [Chromosome] -> String
+recordPrint _ [] = ""
+recordPrint i (h:t) = "Gen " ++ (show i) ++  ": " ++ (show h) ++ "\n" ++ (recordPrint (i+1) t)

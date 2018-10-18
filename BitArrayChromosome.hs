@@ -2,13 +2,18 @@
 module BitArrayChromosome (
     Chromosome,
     Bin,
+    Rand,
     --chromosome2lst,
     mkChromosome,
     mkData,
     getFst,
     getSnd,
-    mutategene
+    mutategene,
+    genChromosome,
+    dec2bin
     ) where
+
+import System.Random
 
 -- defines single chromosome data, being either 0 or 1
 data Bin = Bin Int
@@ -70,3 +75,27 @@ replaceNth [] _ _ = []
 replaceNth (x:xs) newVal n
     | n == 0 = newVal:xs
     | otherwise = x:replaceNth xs newVal (n-1)
+
+{-
+genPop :: Int -> [Chromosome]
+genPop num = 
+    do
+    | num == 0 = []
+    | otherwise = genChromosome : (genPop (num-1))    
+-}
+
+-- <Test Cases>
+{-
+
+
+-}
+
+type Rand = Int -- of scope between 0~63
+
+genChromosome :: Rand -> Chromosome
+genChromosome i = dec2bin 6 i
+
+dec2bin :: Int -> Int -> [Bin]
+dec2bin len todiv
+    | len == 0 = []
+    | otherwise = (dec2bin (len-1) (div todiv 2))++[Bin (mod todiv 2)]
