@@ -1,4 +1,5 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
+-- by Junsu Shin
 
 module Mutate
 

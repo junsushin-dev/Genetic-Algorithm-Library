@@ -1,6 +1,11 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
 
-module TestMain
+module TestMain(
+    genBinPop,
+    mkData,
+    genetic,
+    printResult
+    )
 
 where
 
@@ -10,7 +15,6 @@ import Mutate
 import BitArrayFit
 import BitArrayChromosome
 import Population
-import EasyPopulation
 
 import Control.Monad (replicateM)
 import Data.List

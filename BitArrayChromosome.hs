@@ -38,7 +38,7 @@ mkChromosome list
 
 -- easy constructor function for chromosome
 mkData :: [Int] -> Chromosome
-mkData lst = mkChromosome (map mkBin lst)
+mkData lst = map mkBin lst
 
 {-
 chromosome2lst :: Chromosome -> [Bin]
