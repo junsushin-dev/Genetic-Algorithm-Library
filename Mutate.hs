@@ -1,5 +1,7 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
 -- by Junsu Shin
+-- This module is a template for a mutate function that should be provided for the user
+-- User should specify the 'mutategene' function or implement a new 'mutate' function of his own
 
 module Mutate
 

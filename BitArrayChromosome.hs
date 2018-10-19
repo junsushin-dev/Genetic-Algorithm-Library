@@ -1,4 +1,9 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
+-- by Junsu Shin
+-- Module: BitArrayChromosome
+-- This module specifies the data type for a BitArray typed Chromosome of length 6
+-- Built for test case / prototyping purposes
+
 module BitArrayChromosome (
     Chromosome,
     Bin,
@@ -25,12 +30,11 @@ mkBin n
     | n == 1 || n == 0 = Bin n
     | otherwise = error "Invalid Integer"
 
--- defines the whole chromosome
--- chromosome is a list of 6 chromosomes
+-- defines a chromosome
+-- chromosome is a list of 6 genes
 type Chromosome = [Bin]
 
--- ensures that chromosome has a list lenght of 6
-
+-- ensures that chromosome has a lenght of 6
 mkChromosome :: [Bin] -> Chromosome
 mkChromosome list
     | length list == 6 = list
@@ -64,6 +68,7 @@ getSnd chromosome = snd (splitAt 3 chromosome)
 -- getFst foo
 -- getSnd foo
 
+-- Flips the bit of the selected gene in a Chromosome 
 mutategene :: Chromosome -> Int -> Chromosome
 mutategene ch i = replaceNth ch newv i 
     where
@@ -76,25 +81,13 @@ replaceNth (x:xs) newVal n
     | n == 0 = newVal:xs
     | otherwise = x:replaceNth xs newVal (n-1)
 
-{-
-genPop :: Int -> [Chromosome]
-genPop num = 
-    do
-    | num == 0 = []
-    | otherwise = genChromosome : (genPop (num-1))    
--}
-
--- <Test Cases>
-{-
-
-
--}
-
 type Rand = Int -- of scope between 0~63
 
+-- Generates a Binary gene Chromosome of length 6
 genChromosome :: Rand -> Chromosome
 genChromosome i = dec2bin 6 i
 
+-- Transforms Rand data into Binary Array form
 dec2bin :: Int -> Int -> [Bin]
 dec2bin len todiv
     | len == 0 = []

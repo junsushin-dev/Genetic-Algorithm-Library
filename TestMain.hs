@@ -1,4 +1,6 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
+-- by Salva, Ofir, Junsu
+-- Module: TestMain module for the user to import and use
 
 module TestMain(
     genBinPop,
@@ -11,7 +13,6 @@ where
 
 import Cross
 import Mutate
-
 import BitArrayFit
 import BitArrayChromosome
 import Population
@@ -22,20 +23,8 @@ import Data.Maybe
 import System.Random
 
 type Population = [Chromosome]
--- type Fit = (Chromosome -> Double)
 
 ----- Client API types Definition
-
--- TBD
-{-
--- Fitness function. From a Chromosome it must return a Num regarding how good this Chromosome is
-fit::Chromosome -> Num
-
--- mutate a single Chromosome according to pm(mutation probability)
-mutate::Chromosome -> Double -> Int -> Chromosome
-
--- data result = (Chromosome, population) -- best Chromosome, whole population
--}
 
 genetic fit cross mutate pc pm maxIterations ioPopulation chromosomeSize =
     do
@@ -62,21 +51,6 @@ appliedGenetic fit cross mutate pc pm maxIterations population intRndStream real
             mutatePop = [if p < pm then mutate c i else c | (c, (i, p)) <- zip population muteRandNums]
             replacePop = replacement fit mutatePop best
             (sol, bestList) = appliedGenetic fit cross mutate pc pm (maxIterations-1) replacePop intTail realTail muteTail
-
---genetic fit _ _ _ _ 0 population = do return population !! (indexOfBest fit population)
---genetic fit cross mutate pc pm maxIterations population =
---    do
---        rndIndex <- replicateM (2 * length population) $ randomRIO (0, (length population - 1) :: Int)
---        rndCrossProbs <- replicateM (length population / 2) $ randomRIO (0, 1 :: Double)
---        rndMutProb <- replicateM (length population) $ randomRIO (0, 1 :: Double)
---
---        let best = population !! (indexOfBest fit population)
---        let selectPop = select fit population rndIndex 0
---        let crossPop = crossAll cross pc rndCrossProbs selectPop
---        let mutatePop = [if p < pm then mutate c else c | (c, p) <- zip population rndMutProb]
---        let replacePop = replacement fit mutatePop best
---
---        return genetic fit cross mutate pc pm (maxIterations-1) replacePop
 
 -- typedef for crossAll
 type Crossfunc = Chromosome -> Chromosome -> (Chromosome, Chromosome)
@@ -130,8 +104,8 @@ indexOfBest fit lst = fromJust (elemIndex (maximum fittedLst) fittedLst)
     where
         fittedLst = map fit lst
 
-
-{-
+-- <Test Case> for BitArray type Chromosome of length 10
+{- 
 let testPop = genBinPop 10 10
 let target = dec2bin 10 1023
 let myfit = targetCompare target
@@ -140,6 +114,9 @@ printResult res
 -}
 
 -- prints the result of genetic to be seen by the user
+-- prints,
+-- 1. the best chromosome from the last generation according to the fitness function
+-- 2. the list of best candidates for each generation
 printResult :: IO (Chromosome, [Chromosome]) -> IO ()
 printResult res =
     do
@@ -149,6 +126,7 @@ printResult res =
         wholeString <- putStr (finalString ++ recordString)
         return wholeString
 
+-- adds the generation number and provides a line switch for better visibility
 recordPrint :: Int -> [Chromosome] -> String
 recordPrint _ [] = ""
 recordPrint i (h:t) = "Gen " ++ (show i) ++  ": " ++ (show h) ++ "\n" ++ (recordPrint (i+1) t)

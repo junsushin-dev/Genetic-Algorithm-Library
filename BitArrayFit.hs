@@ -1,5 +1,7 @@
 -- CPSC 312 - 2018 - Genetic Algorithm Library
--- done by Junsu Shin
+-- by Junsu Shin
+-- Module: BitArrayFit
+-- This module specifies an example of the fitness function for a BitArray type Chromosome of length 6 
 
 module BitArrayFit
 
@@ -7,11 +9,9 @@ where
 
 import BitArrayChromosome
 
+-- functions of type Fit takes a chromosome and evaluates its fitness (represented in Int)
 type Fit = Chromosome -> Int
 
-temptarget = mkData [1,1,1,1,1,1]
-
--- Fitness function. From a Chromosome it must return a Num regarding how good this Chromosome is
 -- <Test Case>
 {-
 d1 = mkData [0,0,1,0,0,0]
@@ -23,9 +23,15 @@ fit d3
 fit d4
 fit d6
 -}
-fit::Chromosome -> Int
-fit chromosome = targetCompare temptarget chromosome
 
+-- Sample Target
+temptarget = mkData [1,1,1,1,1,1]
+
+-- Fitness function template for a BitArray Chromosome that tries to match the genes with a target
+fit::Chromosome -> Int
+fit chromosome = targetCompare target chromosome
+
+-- Compares two lists and gives the number of 
 targetCompare:: (Eq a) => [a] -> [a] -> Int
 targetCompare _ [] = 0
 targetCompare [] _ = 0
